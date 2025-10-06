@@ -1,0 +1,32 @@
+{
+  "name": "ivgam-vault",
+  "version": "1.0.0",
+  "description": "CLI-менеджер паролей Ivgam Vault",
+  "main": "dist/index.js",
+  "bin": {
+    "vault": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "dev": "tsx index.ts"
+  },
+  "keywords": [
+    "cli",
+    "vault",
+    "password",
+    "encryption"
+  ],
+  "author": "Artyom Galay | Ivgam",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^24.6.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
