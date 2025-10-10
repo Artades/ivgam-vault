@@ -9,43 +9,47 @@ import { runRm } from "./commands/rm.js";
 import { runEdit } from "./commands/edit.js";
 import type { VaultStore } from "./types/types.js";
 
-
 export default async function main() {
   const args = process.argv.slice(2);
-  const cmd = args[0];
+  const command = args[0];
 
-  if (!cmd) {
-    console.log("Использование: vault init | add | get | list | rm | edit");
+  if (!command) {
+    console.log("👾 Hello from Ivgam!\nUsage: vault init | add | get | list | rm | edit");
     process.exit(1);
   }
 
-  if (cmd === "init") {
+  if (command === "init") {
     return await runInit();
   }
 
-  const pass = await askHidden("Введите master пароль: ");
+  const masterPassword = await askHidden("Enter master password: ");
   let store: VaultStore;
 
   try {
-    store = loadVault(pass);
+    store = loadVault(masterPassword);
   } catch {
-    console.error("❌ Неверный пароль или повреждённое хранилище");
+    console.error("❌ Invalid password or corrupted vault");
     process.exit(2);
   }
 
-  switch (cmd) {
+  switch (command) {
     case "add":
-      return await runAdd(store, pass, args.slice(1));
+      await runAdd(store, masterPassword, args.slice(1));
+      break;
     case "get":
-      return await runGet(store, pass, args.slice(1));
+      await runGet(store, masterPassword, args.slice(1));
+      break;
     case "list":
-      return await runList(store);
+      await runList(store);
+      break;
     case "rm":
-      return await runRm(store, pass, args.slice(1));
+      await runRm(store, masterPassword, args.slice(1));
+      break;
     case "edit":
-      return await runEdit(store, pass, args.slice(1));
+      await runEdit(store, masterPassword, args.slice(1));
+      break;
     default:
-      console.log("❌ Неизвестная команда");
+      console.error("❌ Unknown command");
       process.exit(1);
   }
 }

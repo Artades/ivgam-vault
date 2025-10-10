@@ -5,7 +5,7 @@ const MOVE_CURSOR_TO_NEW_LINE_CMD = `\x1B[200D`;
 const NEW_LINE_KEY = `\n`;
 const ENTER_KEY = `\r`;
 const EOF_KEY = `\u0004`;
-const BACKSPACE_KEY = `\x7f`;
+const BACKSPACE_KEYS = [`\x7f`, "\x08"];
 const MASK_CHAR = `*`;
 
 async function askHidden(prompt: string): Promise<string> {
@@ -25,7 +25,7 @@ async function askHidden(prompt: string): Promise<string> {
         return;
       }
 
-      if (str === BACKSPACE_KEY) {
+      if (BACKSPACE_KEYS.includes(str)) {
         if (value.length > 0) value = value.slice(0, -1);
       } else {
         value += str;

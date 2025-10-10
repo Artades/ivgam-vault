@@ -6,11 +6,11 @@ import type { VaultStore } from '../types/types.js';
 export async function runAdd(store: VaultStore, pass: string, args: string[]) {
   const key = args[0];
   if (!key) {
-    console.log('⚠️ Укажите имя записи');
+    console.log('⚠️ Please provide a record name');
     process.exit(1);
   }
   if (store[key]) {
-    console.log('❌ Запись уже существует');
+    console.log('❌ Record already exists');
     process.exit(1);
   }
 
@@ -18,19 +18,19 @@ export async function runAdd(store: VaultStore, pass: string, args: string[]) {
   const ask = (q: string) => new Promise<string>((res) => rl.question(q, res));
 
   const username = await ask('Username: ');
-  const password = (await ask('Password (пусто = сгенерировать): ')) || generatePassword();
-  const url = await ask('URL (опционально): ');
-  const notes = await ask('Notes (опционально): ');
+  const password = (await ask('Password (leave empty to generate): ')) || generatePassword();
+  const url = await ask('URL (optional): ');
+  const notes = await ask('Notes (optional): ');
   rl.close();
 
   store[key] = { username, password, url, notes, updated: new Date().toISOString() };
   saveVault(store, pass);
-  console.log(`✅ Добавлено: ${key}`);
+  console.log(`✅ Added: ${key}`);
   process.exit(0);
 }
 
 function generatePassword() {
   const val = crypto.randomBytes(12).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
-  console.log('🔑 Сгенерирован пароль:', val);
+  console.log('🔑 Generated password:', val);
   return val;
 }

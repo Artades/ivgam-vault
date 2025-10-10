@@ -1,13 +1,13 @@
-# 🗝️ Ivgam Vault
+# 👾 Ivgam Vault
 
-**Ivgam Vault** — простой и безопасный CLI-менеджер паролей, который хранит данные локально в зашифрованном виде.  
+**Ivgam Vault** - a simple and secure CLI password manager that stores your data locally in encrypted form.
 
-Хранение осуществляется в `~/.local/vault.dat` (или `%USERPROFILE%\.local\vault.dat` на Windows).  
+Data is stored in `~/.local/vault.dat` (or `%USERPROFILE%\.local\vault.dat` on Windows).
 
 ---
 
-## ⚡ Установка
+## ⚡ Installation
 
-### Из npm (после публикации)
+### From npm (after publishing)
 ```bash
 npm install -g ivgam-vault

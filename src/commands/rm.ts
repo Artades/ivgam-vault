@@ -4,12 +4,12 @@ import { saveVault } from "../utils/valut.js";
 export async function runRm(store: VaultStore, pass: string, args: string[]) {
   const key = args[0];
   if (!key || !store[key]) {
-    console.log("❌ Не найдено");
+    console.log("❌ Not found");
     process.exit(1);
   }
 
   delete store[key];
   saveVault(store, pass);
-  console.log(`🗑️  Удалено: ${key}`);
+  console.log(`🗑️  Deleted: ${key}`);
   process.exit(0);
 }
