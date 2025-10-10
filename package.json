@@ -1,6 +1,6 @@
 {
   "name": "ivgam-vault",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI-менеджер паролей Ivgam Vault",
   "main": "dist/index.js",
   "bin": {
