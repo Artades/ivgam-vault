@@ -5,7 +5,7 @@ const MOVE_CURSOR_TO_NEW_LINE_CMD = `\x1B[200D`;
 const NEW_LINE_KEY = `\n`;
 const ENTER_KEY = `\r`;
 const EOF_KEY = `\u0004`;
-const BACKSPACE_KEYS = [`\x7f`, "\x08"];
+const BACKSPACE_KEY = `\x7f`;
 const MASK_CHAR = `*`;
 
 async function askHidden(prompt: string): Promise<string> {
@@ -14,21 +14,26 @@ async function askHidden(prompt: string): Promise<string> {
 
     stdout.write(prompt);
 
+    const finish = () => {
+      stdout.write(NEW_LINE_KEY);
+      stdin.removeListener("data", onDataHandler);
+      stdin.setRawMode?.(false);
+      stdin.pause();
+      resolve(value);
+    };
+
     const onDataHandler = (char: Buffer) => {
-      const str = char.toString();
+      for (const key of char.toString()) {
+        if (key === ENTER_KEY || key === NEW_LINE_KEY || key === EOF_KEY) {
+          finish();
+          return;
+        }
 
-      if (str === ENTER_KEY || str === NEW_LINE_KEY || str === EOF_KEY) {
-        stdout.write(NEW_LINE_KEY);
-        stdin.removeListener("data", onDataHandler);
-        stdin.setRawMode?.(false);
-        resolve(value);
-        return;
-      }
-
-      if (BACKSPACE_KEYS.includes(str)) {
-        if (value.length > 0) value = value.slice(0, -1);
-      } else {
-        value += str;
+        if (key === BACKSPACE_KEY) {
+          if (value.length > 0) value = value.slice(0, -1);
+        } else {
+          value += key;
+        }
       }
 
       stdout.write(

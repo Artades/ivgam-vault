@@ -1,15 +1,21 @@
 {
   "name": "ivgam-vault",
-  "version": "1.0.1",
-  "description": "CLI-менеджер паролей Ivgam Vault",
+  "version": "1.0.3",
+  "description": "Ivgam Vault CLI password manager",
   "main": "dist/index.js",
   "bin": {
     "vault": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "tsc",
+    "postbuild": "node -e \"require('fs').chmodSync('dist/index.js', 0o755)\"",
+    "prepack": "npm run clean && npm run build",
     "start": "node ./dist/index.js",
-    "dev": "tsx index.ts"
+    "dev": "tsx src/index.ts"
   },
   "keywords": [
     "cli",
@@ -20,6 +26,9 @@
   "author": "Artyom Galay | Ivgam",
   "license": "ISC",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
     "@types/node": "^24.6.2",

@@ -1,25 +1,62 @@
-import clipboard from "clipboardy";
-import type { VaultStore } from "../types/types.js";
+import clipboard from 'clipboardy';
+import type { VaultStore } from '../types/types.js';
+import { selectEntry } from '../utils/selectEntry.js';
 
-export async function runGet(store: VaultStore, _pass: string, args: string[]) {
-  const key = args[0];
+type GetOptions = {
+  waitForClipboardClear?: boolean;
+  showClipboardCleared?: boolean;
+};
+
+export async function runGet(
+  store: VaultStore,
+  _pass: string,
+  args: string[],
+  options: GetOptions = {},
+): Promise<number> {
+  const waitForClipboardClear = options.waitForClipboardClear ?? true;
+  const showClipboardCleared = options.showClipboardCleared ?? true;
+  let key = args[0];
+
   if (!key || !store[key]) {
-    console.log("❌ Record not found");
-    process.exit(1);
+    if (key) console.log('❌ Not found');
+
+    const selectedKey = await selectEntry(Object.keys(store), key);
+
+    if (!selectedKey) {
+      console.log('Cancelled');
+      return 1;
+    }
+
+    key = selectedKey;
   }
 
   const entry = store[key];
-  console.log("👤 User:", entry.username || "");
-  console.log("🌐 URL:", entry.url || "");
-  console.log("📝 Notes:", entry.notes || "");
-  console.log("🔑 Password:", entry.password);
+  if (!entry) {
+    console.log('❌ Not found');
+    return 1;
+  }
+
+  console.log('👤 User:', entry.username || '');
+  console.log('🌐 URL:', entry.url || '');
+  console.log('📝 Notes:', entry.notes || '');
+  console.log('🔑 Password:', entry.password);
 
   await clipboard.write(entry.password);
-  console.log("(Password copied to clipboard for 10 seconds)");
+  console.log('(Password copied to the clipboard for 10 seconds)');
 
-  setTimeout(async () => {
-    await clipboard.write("");
-    console.log("🧹 Clipboard cleared");
-    process.exit(0);
-  }, 10000);
+  const clearClipboard = async () => {
+    await clipboard.write('');
+    if (showClipboardCleared) console.log('🧹 Clipboard cleared');
+  };
+
+  if (waitForClipboardClear) {
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await clearClipboard();
+  } else {
+    setTimeout(() => {
+      void clearClipboard();
+    }, 10000);
+  }
+
+  return 0;
 }

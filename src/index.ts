@@ -7,49 +7,50 @@ import { runGet } from "./commands/get.js";
 import { runList } from "./commands/list.js";
 import { runRm } from "./commands/rm.js";
 import { runEdit } from "./commands/edit.js";
+import { runShell } from "./commands/shell.js";
 import type { VaultStore } from "./types/types.js";
 
 export default async function main() {
   const args = process.argv.slice(2);
-  const command = args[0];
+  const cmd = args[0];
 
-  if (!command) {
-    console.log("👾 Hello from Ivgam!\nUsage: vault init | add | get | list | rm | edit");
-    process.exit(1);
+  if (!cmd) {
+    process.exitCode = await runShell();
+    return;
   }
 
-  if (command === "init") {
+  if (cmd === "init") {
     return await runInit();
   }
 
-  const masterPassword = await askHidden("Enter master password: ");
+  const pass = await askHidden("Enter master password: ");
   let store: VaultStore;
 
   try {
-    store = loadVault(masterPassword);
+    store = loadVault(pass);
   } catch {
     console.error("❌ Invalid password or corrupted vault");
     process.exit(2);
   }
 
-  switch (command) {
+  switch (cmd) {
     case "add":
-      await runAdd(store, masterPassword, args.slice(1));
-      break;
+      process.exitCode = await runAdd(store, pass, args.slice(1));
+      return;
     case "get":
-      await runGet(store, masterPassword, args.slice(1));
-      break;
+      process.exitCode = await runGet(store, pass, args.slice(1));
+      return;
     case "list":
-      await runList(store);
-      break;
+      process.exitCode = await runList(store);
+      return;
     case "rm":
-      await runRm(store, masterPassword, args.slice(1));
-      break;
+      process.exitCode = await runRm(store, pass, args.slice(1));
+      return;
     case "edit":
-      await runEdit(store, masterPassword, args.slice(1));
-      break;
+      process.exitCode = await runEdit(store, pass, args.slice(1));
+      return;
     default:
-      console.error("❌ Unknown command");
+      console.log("❌ Unknown command");
       process.exit(1);
   }
 }
